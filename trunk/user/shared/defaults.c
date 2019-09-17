@@ -392,6 +392,55 @@ struct nvram_pair router_defaults[] = {
 	{ "aria_pport", "16888" },
 	{ "aria_rport", "6800" },
 	{ "aria_ropen", "0" },
+    /* koolproxy AD */
+	{ "koolproxy_enable", "0"},
+	{ "koolproxy_https", "0"},
+	{ "koolproxy_set", "0"},
+	{ "hosts_ad", "0"},
+	{ "tv_hosts", "0"},
+	{ "koolproxy_video", "0"},
+	{ "koolproxy_cpu", "0"},
+	{ "koolproxy_prot", "0"},
+	{ "rules_list", "0"},
+	{ "koolproxy_txt_0", "https://dev.tencent.com/u/dtid_39de1afb676d0d78/p/kp/git/raw/master/koolproxy.txt"},
+	{ "daily_txt_0", "https://dev.tencent.com/u/dtid_39de1afb676d0d78/p/kp/git/raw/master/daily.txt"},
+	{ "kp_dat_0", "https://dev.tencent.com/u/dtid_39de1afb676d0d78/p/kp/git/raw/master/kp.dat"},
+	{ "koolproxy_txt_1", "https://gitee.com/bkye/kp/raw/master/mrules/koolproxy.txt"},
+	{ "daily_txt_1", "https://gitee.com/bkye/kp/raw/master/mrules/daily.txt"},
+	{ "kp_dat_1", "https://dev.tencent.com/u/dtid_39de1afb676d0d78/p/kp/git/raw/master/kp.dat"},
+	{ "koolproxy_txt_2", ""},
+	{ "daily_txt_2", ""},
+	{ "kp_dat_2", ""},
+	{ "koolproxy_update", "0"} ,
+	{ "koolproxy_update_hour", "3" },
+	{ "kolproxy_update_min", "00" },
+    { "ss_DNS_Redirect", "0" },
+	{ "kp_ip_x", "0" },
+	{ "kp_staticnum_x", "0" },
+	/*Adbyby PlUS+*/
+	{ "adbyby_enable", "0" },
+	{ "adbyby_set", "0" },
+	{ "adbyby_adb_update", "0" },
+	{ "adbyby_update", "2" },
+	{ "adbyby_update_hour", "03" },
+	{ "adbyby_update_min", "30" },
+	{ "adbyby_ip_x", "0" },
+	{ "adbyby_rules_x", "0" },
+	{ "adbybyip_staticnum_x", "0" },
+	{ "adbybyrules_staticnum_x", "0" },
+    /* Aliddns */
+	{ "aliddns_enable", "0" },
+	{ "aliddns_interval", "600" },
+	{ "aliddns_ttl", "600" },
+	{ "aliddns_ak", ""  },
+	{ "aliddns_sk", "" },
+	{ "aliddns_name", "" },
+	{ "aliddns_name2", "" },
+	{ "aliddns_name6", "" },
+	{ "aliddns_domain", "" },
+	{ "aliddns_domain2", "" },
+	{ "aliddns_domain6", "" },
+
 	{ "hdd_spindt", "0" },
 	{ "hdd_apmoff", "0" },
 
@@ -498,15 +547,22 @@ struct nvram_pair router_defaults[] = {
 	
 	/* vlmcsd */
 	{ "vlmcsd_enable", "0" },
-
-	/* dns-forwarder */
-	{ "dns_forwarder_enable", "0" },
-	{ "dns_forwarder_port", "5353" },
-	{ "dns_forwarder_bind", "0.0.0.0" },
-	{ "dns_forwarder_server", "8.8.4.4:53" },
 	
 	/* shadowsocks */
 	{ "ss_type", "0" }, //0=ss, 1=ssr
+	{ "global_server", "nil" },
+	{ "udp_relay_server", "nil" },
+	{ "ss_threads", "0" },
+	{ "ss_run_mode", "gfw" },
+	{ "pdnsd_enable", "0" },
+	{ "tunnel_forward", "8.8.4.4:53" },
+	{ "socks5_proxy", "nil" },
+	{ "socks5_proxy_port", "1080" },
+	{ "ss_turn", "1" },
+	{ "ss_watchcat", "1" },
+	{ "ss_turn_s", "600" },
+	{ "ss_turn_ss", "5" },
+
 	{ "ss_enable", "0" },
 	{ "ss_mode", "1" }, 	//0=全局代理,1=绕过大陆,2=gfwlist
 	{ "ss_server", "127.0.0.1" },
@@ -525,13 +581,15 @@ struct nvram_pair router_defaults[] = {
 	{ "ss_obfs_param", ""},
 
 	{ "ss-tunnel_enable", "0" },
-	{ "ss-tunnel_local_port", "5301" },
+	{ "ss-tunnel_local_port", "5353" },
 	{ "ss-tunnel_remote", "8.8.4.4:53" },
 	{ "ss-tunnel_mtu", "1492" },
 	
-	{ "ss_watchcat", "1" },
+
 	{ "ss_update_chnroute", "0" },
 	{ "ss_update_gfwlist", "0" },
+	
+	{ "ssp_staticnum_x", "0" },
 	
 	/* DHCP server parameters */
 	{ "dhcp_start", DEF_LAN_DHCP_BEG },	/* First assignable DHCP address */
@@ -826,9 +884,40 @@ struct nvram_pair tables_defaults[] = {
 	{ "sr_matric_x", "" },
 	{ "sr_if_x", "" },
 
+	{ "ssp_type_x", "" },
+	{ "ssp_name_x", "" },
+	{ "ssp_server_x", "" },
+	{ "ssp_prot_x", "" },
+	{ "switch_enable_x", "1" },
+	{ "ss_key_x", "" },
+	{ "ss_method_x", "" },
+	{ "ss_protocol_x", "" },
+	{ "ss_proto_param_x", "" },
+	{ "ss_obfs_x", "" },
+	{ "ss_obfs_param_x", "" },
+	{ "ssp_local_port_x", "" },
+	{ "v2_aid_x", "" },
+	{ "v2_vid_x", "" },
+	{ "v2_security_x", "" },
+	{ "v2_net_x", "" },
+	{ "v2_type_x", "" },
+	{ "v2_tls_x", "" },
+	
 	{ "dhcp_staticmac_x", "" },
 	{ "dhcp_staticip_x", "" },
 	{ "dhcp_staticname_x", "" },
+	
+	{"koolproxy_mac_x", "" },
+	{"koolproxy_ip_x", "" },
+	{"koolproxy_name_x", "" },
+	
+	{"adbybyip_mac_x", "" },
+	{"adbybyip_ip_x", "" },
+	{"adbybyip_name_x", "" },
+	{"adbybyip_ip_road_x", "" },
+	
+	{"adbybyrules_x", "" },
+	{"adbybyrules_road_x", "" },
 
 	{ "vpns_user_x", "" },
 	{ "vpns_pass_x", "" },

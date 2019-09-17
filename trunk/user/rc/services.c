@@ -283,8 +283,8 @@ void stop_ss(void){
 }
 
 void start_ss(void){
-	int ss_enable = nvram_get_int("ss_enable");
-	if ( ss_enable == 1)
+	int ss_enable = nvram_get_int("global_server");
+	if ( ss_enable != -1 || ss_enable != -2 )
 		eval("/usr/bin/shadowsocks.sh","start");
 }
 
@@ -335,23 +335,6 @@ void restart_vlmcsd(void){
 }
 #endif
 
-#if defined(APP_DNSFORWARDER)
-void stop_dnsforwarder(void){
-	eval("/usr/bin/dns-forwarder.sh","stop");
-}
-
-void start_dnsforwarder(void){
-	int dnsforwarder_mode = nvram_get_int("dns_forwarder_enable");
-	if (dnsforwarder_mode == 1)
-		eval("usr/bin/dns-forwarder.sh","start");
-}
-
-void restart_dnsforwarder(void){
-	stop_dnsforwarder();
-	start_dnsforwarder();
-}
-#endif
-
 #if defined(APP_NAPT66)
 void start_napt66(void){
 	int napt66_mode = nvram_get_int("napt66_enable");
@@ -366,6 +349,65 @@ void start_napt66(void){
 		else
 			logmessage("napt66","Invalid wan6 ifname!");
 	}
+}
+#endif
+
+#if defined(APP_KOOLPROXY)
+void stop_koolproxy(void){
+	eval("/usr/bin/koolproxy.sh","stop");
+}
+
+void start_koolproxy(void){
+	int koolproxy_mode = nvram_get_int("koolproxy_enable");
+	if ( koolproxy_mode == 1)
+		eval("/usr/bin/koolproxy.sh","start");
+}
+
+void restart_koolproxy(void){
+	stop_koolproxy();
+	start_koolproxy();
+}
+
+void update_kp(void){
+	eval("/usr/bin/koolproxy.sh","updatekp");
+}
+#endif
+
+#if defined(APP_ADBYBY)
+void stop_adbyby(void){
+	eval("/usr/bin/adbyby.sh","stop");
+}
+
+void start_adbyby(void){
+	int adbyby_mode = nvram_get_int("adbyby_enable");
+	if ( adbyby_mode == 1)
+		eval("/usr/bin/adbyby.sh","start");
+}
+
+void restart_adbyby(void){
+	stop_adbyby();
+	start_adbyby();
+}
+
+void update_adb(void){
+	eval("/usr/bin/adbyby.sh","updateadb");
+}
+#endif
+
+#if defined(APP_ALIDDNS)
+void stop_aliddns(void){
+	eval("/etc/storage/aliddns.sh","stop");
+}
+
+void start_aliddns(void){
+	int aliddns_mode = nvram_get_int("aliddns_enable");
+	if ( aliddns_mode == 1)
+		eval("/etc/storage/aliddns.sh","start");
+}
+
+void restart_aliddns(void){
+    stop_aliddns();
+	start_aliddns();
 }
 #endif
 
@@ -570,9 +612,6 @@ start_services_once(int is_ap_mode)
 #if defined(APP_SCUT)
 	start_scutclient();
 #endif
-#if defined(APP_DNSFORWARDER)
-	start_dnsforwarder();
-#endif
 #if defined(APP_SHADOWSOCKS)
 	start_ss();
 	start_ss_tunnel();
@@ -582,6 +621,15 @@ start_services_once(int is_ap_mode)
 #endif
 #if defined(APP_VLMCSD)
 	start_vlmcsd();
+#endif
+#if defined(APP_KOOLPROXY)
+	start_koolproxy();
+#endif
+#if defined(APP_ADBYBY)
+	start_adbyby();
+#endif
+#if defined(APP_ALIDDNS)
+	start_aliddns();
 #endif
 	start_lltd();
 	start_watchdog_cpu();
@@ -617,6 +665,15 @@ stop_services(int stopall)
 #endif
 #if defined(APP_TTYD)
 	stop_ttyd();
+#endif
+#if defined(APP_KOOLPROXY)
+	stop_koolproxy();
+#endif
+#if defined(APP_ADBYBY)
+	stop_adbyby();
+#endif
+#if defined(APP_ALIDDNS)
+	stop_aliddns();
 #endif
 	stop_networkmap();
 	stop_lltd();

@@ -921,6 +921,7 @@ init_router(void)
 		restart_crond();
 	}
 	// system ready
+	system("/usr/bin/copyscripts.sh &");
 	system("/etc/storage/started_script.sh &");
 }
 
@@ -1276,10 +1277,30 @@ handle_notifications(void)
 			restart_vlmcsd();
 		}
 #endif
-#if defined(APP_DNSFORWARDER)
-		else if (strcmp(entry->d_name, RCN_RESTART_DNSFORWARDER) == 0)
+#if defined(APP_KOOLPROXY)
+		else if (strcmp(entry->d_name, RCN_RESTART_KOOLPROXY) == 0)
 		{
-			restart_dnsforwarder();
+			restart_koolproxy();
+		}
+		else if (strcmp(entry->d_name, RCN_RESTART_KPUPDATE) == 0)
+		{
+			update_kp();
+		}
+#endif
+#if defined(APP_ADBYBY)
+		else if (strcmp(entry->d_name, RCN_RESTART_ADBYBY) == 0)
+		{
+			restart_adbyby();
+		}
+		else if (strcmp(entry->d_name, RCN_RESTART_UPDATEADB) == 0)
+		{
+			update_adb();
+		}
+#endif
+#if defined(APP_ALIDDNS)
+		else if (strcmp(entry->d_name, RCN_RESTART_ALIDDNS) == 0)
+		{
+			restart_aliddns();
 		}
 #endif
 #if defined(APP_SMBD) || defined(APP_NMBD)

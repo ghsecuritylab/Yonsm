@@ -1192,7 +1192,9 @@ update_variables_ex(int eid, webs_t wp, int argc, char **argv)
 		}
 		else {
 			char group_id[64];
+			char group_id2[64];
 			snprintf(group_id, sizeof(group_id), "%s", websGetVar(wp, "group_id", ""));
+			snprintf(group_id2, sizeof(group_id2), "%s", websGetVar(wp, "group_id2", ""));
 			
 			if (strlen(action_mode) > 0) {
 				if (!strcmp(action_mode, " Add ")) {
@@ -1233,6 +1235,22 @@ update_variables_ex(int eid, webs_t wp, int argc, char **argv)
 						nvram_set_int_temp(group_id, 0);
 						nvram_clr_group_temp(v);
 					}
+
+					if (v->name && nvram_get_int(group_id2) > 0) {
+						restart_needed_bits |= (v->event_mask & ~(EVM_BLOCK_UNSAFE));
+						dbG("group restart_needed_bits: 0x%llx\n", restart_needed_bits);
+#if BOARD_HAS_5G_RADIO
+						if (!strcmp(group_id2, "RBRList") || !strcmp(group_id2, "ACLList"))
+							wl_modified |= WIFI_COMMON_CHANGE_BIT;
+#endif
+						if (!strcmp(group_id2, "rt_RBRList") || !strcmp(group_id2, "rt_ACLList"))
+							rt_modified |= WIFI_COMMON_CHANGE_BIT;
+						
+						nvram_modified = 1;
+						nvram_set_int_temp(group_id2, 0);
+						nvram_clr_group_temp(v);
+					}
+					
 					
 					if (nvram_modified)
 						websWrite(wp, "<script>done_committing();</script>\n");
@@ -1976,6 +1994,9 @@ static int shadowsocks_action_hook(int eid, webs_t wp, int argc, char **argv)
 static int shadowsocks_status_hook(int eid, webs_t wp, int argc, char **argv)
 {
 	int ss_status_code = pids("ss-redir");
+	if (ss_status_code == 0){
+		ss_status_code = pids("ssr-redir");
+	}
 	websWrite(wp, "function shadowsocks_status() { return %d;}\n", ss_status_code);
 	int ss_tunnel_status_code = pids("ss-local");
 	websWrite(wp, "function shadowsocks_tunnel_status() { return %d;}\n", ss_tunnel_status_code);
@@ -1999,7 +2020,7 @@ static int rules_count_hook(int eid, webs_t wp, int argc, char **argv)
 	websWrite(wp, "function chnroute_count() { return '%s';}\n", count);
 #if defined(APP_SHADOWSOCKS)
 	memset(count, 0, sizeof(count));
-	fstream = popen("grep ^server /etc/storage/gfwlist/dnsmasq_gfwlist.conf |wc -l","r");
+	fstream = popen("grep ^server /etc/storage/gfwlist/dnsmasq_gfwlist_ipset.conf |wc -l","r");
 	if(fstream) {
 		fgets(count, sizeof(count), fstream);
 		pclose(fstream);
@@ -2015,11 +2036,65 @@ static int rules_count_hook(int eid, webs_t wp, int argc, char **argv)
 
 #endif
 
-#if defined(APP_DNSFORWARDER)
+#if defined(APP_SHADOWSOCKS)
 static int dnsforwarder_status_hook(int eid, webs_t wp, int argc, char **argv)
 {
 	int status_code = pids("dns-forwarder");
 	websWrite(wp, "function dnsforwarder_status() { return %d;}\n", status_code);
+	return 0;
+}
+static int pdnsd_status_hook(int eid, webs_t wp, int argc, char **argv)
+{
+	int status_code = pids("pdnsd");
+	websWrite(wp, "function pdnsd_status() { return %d;}\n", status_code);
+	return 0;
+}
+static int dnsproxy_status_hook(int eid, webs_t wp, int argc, char **argv)
+{
+	int status_code = pids("dnsproxy");
+	websWrite(wp, "function dnsproxy_status() { return %d;}\n", status_code);
+	return 0;
+}
+#endif
+
+#if defined (APP_KOOLPROXY)
+static int koolproxy_action_hook(int eid, webs_t wp, int argc, char **argv)
+{
+	int needed_seconds = 3;
+	char *kp_action = websGetVar(wp, "connect_action", "");
+	
+	if (!strcmp(kp_action, "resetkp")) {
+		notify_rc(RCN_RESTART_KPUPDATE);
+	}
+	websWrite(wp, "<script>restart_needed_time(%d);</script>\n", needed_seconds);
+	return 0;
+}
+
+static int koolproxy_status_hook(int eid, webs_t wp, int argc, char **argv)
+{
+	int kp_status_code = pids("koolproxy");
+	websWrite(wp, "function koolproxy_status() { return %d;}\n", kp_status_code);
+	return 0;
+}
+#endif
+
+#if defined (APP_ADBYBY)
+static int adbyby_action_hook(int eid, webs_t wp, int argc, char **argv)
+{
+	int needed_seconds = 3;
+	char *ad_action = websGetVar(wp, "connect_action", "");
+	
+	if (!strcmp(ad_action, "updateadb")) {
+		notify_rc(RCN_RESTART_UPDATEADB);
+	}
+	websWrite(wp, "<script>restart_needed_time(%d);</script>\n", needed_seconds);
+	return 0;
+}
+
+static int adbyby_status_hook(int eid, webs_t wp, int argc, char **argv)
+{
+	int ad_status_code = pids("adbyby");
+	websWrite(wp, "function adbyby_status() { return %d;}\n", ad_status_code);
 	return 0;
 }
 #endif
@@ -2203,10 +2278,20 @@ ej_firmware_caps_hook(int eid, webs_t wp, int argc, char **argv)
 #else
 	int found_app_shadowsocks = 0;
 #endif
-#if defined(APP_DNSFORWARDER)
-	int found_app_dnsforwarder = 1;
+#if defined(APP_KOOLPROXY)
+	int found_app_koolproxy = 1;
 #else
-	int found_app_dnsforwarder = 0;
+	int found_app_koolproxy = 0;
+#endif
+#if defined(APP_ADBYBY)
+	int found_app_adbyby = 1;
+#else
+	int found_app_adbyby = 0;
+#endif
+#if defined(APP_ALIDDNS)
+	int found_app_aliddns = 1;
+#else
+	int found_app_aliddns = 0;
 #endif
 #if defined(APP_XUPNPD)
 	int found_app_xupnpd = 1;
@@ -2370,8 +2455,10 @@ ej_firmware_caps_hook(int eid, webs_t wp, int argc, char **argv)
 		"function found_app_ttyd() { return %d;}\n"
 		"function found_app_vlmcsd() { return %d;}\n"
 		"function found_app_napt66() { return %d;}\n"
-		"function found_app_dnsforwarder() { return %d;}\n"
 		"function found_app_shadowsocks() { return %d;}\n"
+		"function found_app_koolproxy() { return %d;}\n"
+		"function found_app_adbyby() { return %d;}\n"
+		"function found_app_aliddns() { return %d;}\n"
 		"function found_app_xupnpd() { return %d;}\n",
 		found_utl_hdparm,
 		found_app_ovpn,
@@ -2391,8 +2478,10 @@ ej_firmware_caps_hook(int eid, webs_t wp, int argc, char **argv)
 		found_app_ttyd,
 		found_app_vlmcsd,
 		found_app_napt66,
-		found_app_dnsforwarder,
 		found_app_shadowsocks,
+		found_app_koolproxy,
+		found_app_adbyby,
+		found_app_aliddns,
 		found_app_xupnpd
 	);
 
@@ -4036,10 +4125,18 @@ struct ej_handler ej_handlers[] =
 #if defined (APP_SHADOWSOCKS)
 	{ "shadowsocks_action", shadowsocks_action_hook},
 	{ "shadowsocks_status", shadowsocks_status_hook},
+	{ "dnsforwarder_status", dnsforwarder_status_hook},
+	{ "pdnsd_status", pdnsd_status_hook},
+	{ "dnsproxy_status", dnsproxy_status_hook},
 	{ "rules_count", rules_count_hook},
 #endif
-#if defined (APP_DNSFORWARDER)
-	{ "dnsforwarder_status", dnsforwarder_status_hook},
+#if defined (APP_KOOLPROXY)
+	{ "koolproxy_action", koolproxy_action_hook},
+	{ "koolproxy_status", koolproxy_status_hook},
+#endif
+#if defined (APP_ADBYBY)
+	{ "adbyby_action", adbyby_action_hook},
+	{ "adbyby_status", adbyby_status_hook},
 #endif
 	{ "openssl_util_hook", openssl_util_hook},
 	{ "openvpn_srv_cert_hook", openvpn_srv_cert_hook},

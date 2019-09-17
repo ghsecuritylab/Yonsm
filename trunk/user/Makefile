@@ -125,6 +125,8 @@ dir_y						+= xl2tpd
 dir_$(CONFIG_FIRMWARE_INCLUDE_RPL2TP)		+= rp-l2tp
 dir_y						+= lldt
 dir_y						+= scripts
+dir_$(CONFIG_FIRMWARE_INCLUDE_SHADOWSOCKS)	   += pdnsd
+dir_$(CONFIG_FIRMWARE_INCLUDE_SHADOWSOCKS)     += dnsproxy
 dir_$(OPENSSH_ENABLED)				+= openssh
 dir_$(DROPBEAR_ENABLED)				+= dropbear
 dir_$(CONFIG_FIRMWARE_INCLUDE_HTOP)		+= htop
@@ -146,7 +148,7 @@ dir_$(CONFIG_FIRMWARE_INCLUDE_TTYD)		+= ttyd
 dir_$(SOFTETHERVPN_ENABLE)			+= softethervpn
 dir_$(CONFIG_FIRMWARE_INCLUDE_SCUTCLIENT)         += scutclient
 dir_$(CONFIG_FIRMWARE_INCLUDE_VLMCSD)			+= vlmcsd
-dir_$(CONFIG_FIRMWARE_INCLUDE_DNSFORWARDER)		+= dns-forwarder
+dir_$(CONFIG_FIRMWARE_INCLUDE_SHADOWSOCKS)		+= dns-forwarder
 dir_$(SHADOWSOCKS_ENABLE)				+= shadowsocks
 dir_$(CONFIG_FIRMWARE_INCLUDE_LRZSZ)			+= lrzsz
 dir_$(CONFIG_FIRMWARE_INCLUDE_GDUT_DRCOM)		+= gdut-drcom
@@ -184,6 +186,9 @@ dir_$(CONFIG_FIRMWARE_INCLUDE_TRANSMISSION)	+= transmission
 dir_$(ARIA2_ENABLED)		+= aria2
 endif
 
+dir_$(CONFIG_FIRMWARE_INCLUDE_KOOLPROXY)		+= koolproxy
+dir_$(CONFIG_FIRMWARE_INCLUDE_ADBYBY)		+= adbyby
+dir_$(CONFIG_FIRMWARE_INCLUDE_ALIDDNS)		+= aliddns
 ifdef CONFIG_MTD_UBI
 ifneq ($(STORAGE_ENABLED),y)
 dir_y						+= optware
