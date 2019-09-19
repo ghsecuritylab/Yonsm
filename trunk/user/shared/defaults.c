@@ -642,8 +642,13 @@ struct nvram_pair router_defaults[] = {
 	{ "sw_mode", "1" },
 #endif
 
+#ifdef ONLY_FOR_YONSM
+	{ "telnetd", "0" },
+	{ "sshd_enable", "1" },
+#else
 	{ "telnetd", "1" },
 	{ "sshd_enable", "0" },
+#endif
 	{ "wins_enable", "0" },
 	{ "lltd_enable", "1" },
 	{ "adsc_enable", "0" },
